@@ -10,8 +10,11 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
+val okioVersion = "3.0.0-alpha.9"
+val ktorVersion = "1.6.3"
 kotlin {
     jvm {
         compilations.all {
@@ -43,8 +46,6 @@ kotlin {
             }
         }
     }*/
-    val okioVersion = "3.0.0-alpha.9"
-    val ktorVersion = "1.6.3"
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -63,6 +64,7 @@ kotlin {
             dependencies {
                 implementation("com.squareup.okio:okio:$okioVersion")
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("com.github.chiachat:bls12381java:4.0")
             }
         }
         val jvmTest by getting {
@@ -74,6 +76,7 @@ kotlin {
             dependencies {
                 api("com.squareup.okio:okio-nodefilesystem-js:$okioVersion")
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
+                implementation(npm("@chiachat/amcl", "4.0.0"))
             }
         }
         /*
