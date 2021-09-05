@@ -1,8 +1,11 @@
 package org.chiachat.kbls
 
+import org.chiachat.amcljs.CTX
+
 actual class KBLS {
     actual fun genPrivateKey(secretPhrase: String): PrivateKey {
-        return PrivateKey()
+        val ctx = CTX("BLS12381")
+        return PrivateKey("")
     }
     actual fun sign(privateKey: PrivateKey, message: String): Signature {
         return Signature()

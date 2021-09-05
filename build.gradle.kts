@@ -25,9 +25,16 @@ kotlin {
         }
     }
     js(IR) {
+        useCommonJs()
         browser {
             commonWebpackConfig {
                 cssSupport.enabled = true
+            }
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                    useFirefox()
+                }
             }
         }
     }
