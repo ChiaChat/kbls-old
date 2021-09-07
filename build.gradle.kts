@@ -11,6 +11,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
+    maven("https://artifacts.consensys.net/public/maven/maven/")
 }
 
 val okioVersion = "3.0.0-alpha.9"
@@ -24,7 +25,7 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    js(IR) {
+    /*js(IR) {
         useCommonJs()
         browser {
             commonWebpackConfig {
@@ -37,7 +38,7 @@ kotlin {
                 }
             }
         }
-    }
+    }*/
     /*
     iosArm64 {
         binaries {
@@ -71,7 +72,9 @@ kotlin {
             dependencies {
                 implementation("com.squareup.okio:okio:$okioVersion")
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
-                implementation("com.github.chiachat:bls12381java:4.0")
+                implementation("com.github.chiachat:jbls:1.0.5")
+                implementation("org.apache.tuweni:tuweni-ssz:2.0.0")
+                implementation("org.apache.tuweni:tuweni-bytes:2.0.0")
             }
         }
         val jvmTest by getting {
@@ -79,13 +82,12 @@ kotlin {
                 api("com.squareup.okio:okio-fakefilesystem:$okioVersion")
             }
         }
-        val jsMain by getting {
+        /*val jsMain by getting {
             dependencies {
                 api("com.squareup.okio:okio-nodefilesystem-js:$okioVersion")
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
-                implementation(npm("@chiachat/amcl", "4.0.0"))
             }
-        }
+        }*/
         /*
         val jsTest by getting
         val iosArm64Main by getting
