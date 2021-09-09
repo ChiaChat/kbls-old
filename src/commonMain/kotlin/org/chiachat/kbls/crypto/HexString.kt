@@ -1,6 +1,4 @@
-package org.chiachat.kbls.exp
-
-import com.ionspin.kotlin.bignum.integer.BigInteger
+package org.chiachat.kbls.crypto
 
 class HexString(val value: String) {
     constructor(intValue: Int) : this(intToHex(intValue))
