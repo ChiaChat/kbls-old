@@ -1,5 +1,10 @@
 import org.chiachat.kbls.crypto.bech32.AddressFormatException
 import org.chiachat.kbls.crypto.bech32.Bech32Data
+//import org.chiachat.kbls.crypto.bech32.AddressFormatException
+
+import java.io.ByteArrayOutputStream
+import kotlin.experimental.and
+
 
 /**
  * Bech32 Kotlin implementation.
@@ -9,6 +14,8 @@ import org.chiachat.kbls.crypto.bech32.Bech32Data
 object Bech32 {
     /** The Bech32 character set for encoding.  */
     private const val CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+
+    private const val M = 0x2BC830A3;
 
     /** The Bech32 character set for decoding.  */
     private val CHARSET_REV = byteArrayOf(
@@ -54,7 +61,7 @@ object Bech32 {
         val combined = ByteArray(hrpExpanded.size + values.size)
         hrpExpanded.copyInto(combined)
         values.copyInto(combined, destinationOffset = hrpExpanded.size)
-        return polymod(combined) == 1
+        return polymod(combined) == M
     }
 
     /** Create a checksum.  */
@@ -64,7 +71,7 @@ object Bech32 {
         hrpExpanded.copyInto(enc)
         values.copyInto(enc, startIndex = 0, destinationOffset = hrpExpanded.size)
 
-        val mod = polymod(enc) xor 1
+        val mod = polymod(enc) xor M
         val ret = ByteArray(6)
         for (i in 0..5) {
             ret[i] = (mod.ushr(5 * (5 - i)) and 31).toByte()
@@ -79,16 +86,25 @@ object Bech32 {
         return encode(bech32.humanReadablePart, bech32.data)
     }
 
+//    fun String.decodeHex(): ByteArray {
+//        check(length % 2 == 0) { "Must have an even length" }
+//
+//        return chunked(2)
+//            .map { it.toInt(16).toByte() }
+//            .toByteArray()
+//    }
+
     /**
      * Encodes a Bech32 string.
      */
-    fun encode(humanReadablePart: String, data: ByteArray): String {
+    fun encode(humanReadablePart: String, dataIn: ByteArray): String {
         var hrp = humanReadablePart
+        var data = convertBits(dataIn, dataIn.size,8, 5,true )
 
         check(hrp.isNotEmpty()) { "Human-readable part is too short" }
         check(hrp.length <= 83) { "Human-readable part is too long" }
 
-        hrp = hrp.toLowerCase()
+//        hrp = hrp.toLowerCase()
         val checksum = createChecksum(hrp, data)
         val combined = ByteArray(data.size + checksum.size)
         data.copyInto(combined)
@@ -102,6 +118,109 @@ object Bech32 {
         }
         return sb.toString()
     }
+
+    /**
+     * Helper for re-arranging bits into groups.
+     */
+    @Throws(AddressFormatException::class)
+    private fun convertBits(
+        `in`: ByteArray, inLen: Int, fromBits: Int,
+        toBits: Int, pad: Boolean = true
+    ): ByteArray {
+        var acc = 0
+        var bits = 0
+        val out = ByteArrayOutputStream(64)
+        val maxv = (1 shl toBits) - 1
+        val max_acc = (1 shl fromBits + toBits - 1) - 1
+
+        for (i in 0 until inLen) {
+            val value: Int = `in`[i].toInt() and 0xff
+            if (value ushr fromBits != 0)
+            {
+                throw Exception("SHit broke")
+            }
+            acc = acc shl fromBits or value and max_acc
+            bits += fromBits
+            while (bits >= toBits) {
+                bits -= toBits
+                out.write(acc ushr bits and maxv)
+            }
+        }
+        if (pad) {
+            if (bits > 0) out.write(acc shl toBits - bits and maxv)
+        } else if (bits >= fromBits || acc shl toBits - bits and maxv != 0) {
+            throw Exception("Could not convert bits, invalid padding")
+        }
+        return out.toByteArray()
+    }
+
+//    private fun convertToBits(data: ByteArray, inLen: Int, fromBits: Int, toBits: Int, pad: Boolean): Int {
+//            var acc = 0
+//            var bits = 0
+//            var ret =  array<Int>()
+//            var maxv = (1 << toBits) - 1
+//            var maxacc = (1 << (fromBits + toBits - 1)) - 1
+//
+//
+//
+//            for (i = 0; i < inLen; i++)
+//            {
+//                value = data[i]
+//
+//                if (value < 0 || value >> fromBits)
+//                {
+//                throw new Bech32Exception('Invalid value for convert bits')
+//                }
+//
+//                acc = ((acc << fromBits) | value) & maxacc
+//                bits += fromBits
+//
+//                while (bits >= toBits)
+//                {
+//                    bits -= toBits
+//                    ret[] = ((acc >> bits) & maxv)
+//                }
+//            }
+//
+//            if (pad && bits)
+//            {
+//                ret[] = (acc << toBits - bits) & maxv
+//            }
+//            else if (bits >= fromBits || (((acc << (toBits - bits))) & maxv))
+//            {
+//                throw new Bech32Exception('Invalid data')
+//            }
+//            return ret
+//    }
+
+    /**
+
+    //    fun convertToBits()
+    //    {
+    //        def convertbits(data: List[int], frombits: int, tobits: int, pad: bool = True) -> List[int]:
+    //        """General power-of-2 base conversion."""
+    //        acc = 0
+    //        bits = 0
+    //        ret = []
+    //        maxv = (1 << tobits) - 1
+    //        max_acc = (1 << (frombits + tobits - 1)) - 1
+    //        for value in data:
+    //        if value < 0 or (value >> frombits):
+    //        raise ValueError("Invalid Value")
+    //        acc = ((acc << frombits) | value) & max_acc
+    //        bits += frombits
+    //        while bits >= tobits:
+    //        bits -= tobits
+    //        ret.append((acc >> bits) & maxv)
+    //        if pad:
+    //        if bits:
+    //        ret.append((acc << (tobits - bits)) & maxv)
+    //        elif bits >= frombits or ((acc << (tobits - bits)) & maxv):
+    //        raise ValueError("Invalid bits")
+    //        return ret
+    //    }
+     */
+
 
     /**
      * Decodes a Bech32 string.

@@ -1,8 +1,10 @@
 package org.chiachat.kbls
 
+import okio.ByteString.Companion.decodeHex
 import org.chiachat.jbls.BLSKeyPair
 import org.chiachat.kbls.crypto.ripemd160.extensions.digestRipemd160
 import org.chiachat.kbls.crypto.sha256.extensions.sha256
+import org.chiachat.kbls.util.hexToUByteArray
 import org.junit.jupiter.api.Test
 import java.security.SecureRandom
 import kotlin.test.junit5.JUnit5Asserter.assertEquals
@@ -29,11 +31,13 @@ class KBLSTest {
 //        )
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     @Test
     fun testBech32Encoding(){
-        val key = keypair.secretKey.key
-        val hashedKey = key
-        val encoded = Bech32.encode(humanReadablePart = "xch", hashedKey)
+        val pk = "ebdae24c2760038ca20d1aac3ed6876a1158a5269169b952ac8c46f2a99e1512"
+        val pkarr = pk.hexToUByteArray()
+        pkarr.forEach { print("$it,") }
+        val encoded = Bech32.encode(humanReadablePart = "xch", pkarr)
         assertEquals("Check keys match", "", encoded)
     }
 
