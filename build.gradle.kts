@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.chiachat"
-version = "1.0.4"
+version = "1.0.5"
 
 repositories {
     mavenCentral()
@@ -139,7 +139,7 @@ detekt {
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     // Target version of the generated JVM bytecode. It is used for type resolution.
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 
 rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin::class.java) {
