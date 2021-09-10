@@ -1,6 +1,5 @@
 import org.chiachat.kbls.crypto.bech32.AddressFormatException
 import org.chiachat.kbls.crypto.bech32.Bech32Data
-import java.io.ByteArrayOutputStream
 
 /**
  * Bech32 Kotlin implementation.
@@ -128,10 +127,9 @@ object Bech32 {
     ): ByteArray {
         var acc = 0
         var bits = 0
-        val out = ByteArrayOutputStream(64)
+        val out = mutableListOf<Byte>()
         val maxv = (1 shl toBits) - 1
         val max_acc = (1 shl fromBits + toBits - 1) - 1
-
         for (i in 0 until inLen) {
             val value: Int = `in`[i].toInt() and 0xff
             if (value ushr fromBits != 0) {
@@ -141,11 +139,12 @@ object Bech32 {
             bits += fromBits
             while (bits >= toBits) {
                 bits -= toBits
-                out.write(acc ushr bits and maxv)
+                val data = acc ushr bits and maxv
+                out.add(data.toByte())
             }
         }
         if (pad) {
-            if (bits > 0) out.write(acc shl toBits - bits and maxv)
+            if (bits > 0) out.add((acc shl toBits - bits and maxv).toByte())
         } else if (bits >= fromBits || acc shl toBits - bits and maxv != 0) {
             throw Exception("Could not convert bits, invalid padding")
         }
