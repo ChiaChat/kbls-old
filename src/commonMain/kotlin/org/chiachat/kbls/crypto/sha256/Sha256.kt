@@ -41,8 +41,10 @@ public object Sha256 {
      */
     public fun digest(message: ByteArray): ByteArray {
         // Let H = H0
-        H0.copy(0,
-            H, 0, H0.size)
+        H0.copy(
+            0,
+            H, 0, H0.size
+        )
 
         // Initialize all words
         val words = padMessage(message).toIntArray()
@@ -55,29 +57,37 @@ public object Sha256 {
             // initialize W from the block's words
             words.copy(i * 16, W, 0, 16)
             for (t in 16 until W.size) {
-                W[t] = (smallSig1(W[t - 2]) + W[t - 7] + smallSig0(
-                    W[t - 15]
-                ) + W[t - 16])
+                W[t] = (
+                    smallSig1(W[t - 2]) + W[t - 7] + smallSig0(
+                        W[t - 15]
+                    ) + W[t - 16]
+                    )
             }
 
             // Let TEMP = H
-            H.copy(0,
-                TEMP, 0, H.size)
+            H.copy(
+                0,
+                TEMP, 0, H.size
+            )
 
             // Operate on TEMP
             for (t in W.indices) {
-                val t1 = (TEMP[7] + bigSig1(TEMP[4]) + ch(
-                    TEMP[4],
-                    TEMP[5],
-                    TEMP[6]
-                ) + K[t] + W[t])
+                val t1 = (
+                    TEMP[7] + bigSig1(TEMP[4]) + ch(
+                        TEMP[4],
+                        TEMP[5],
+                        TEMP[6]
+                    ) + K[t] + W[t]
+                    )
                 val t2 = bigSig0(TEMP[0]) + maj(
                     TEMP[0],
                     TEMP[1],
                     TEMP[2]
                 )
-                TEMP.copy(0,
-                    TEMP, 1, TEMP.size - 1)
+                TEMP.copy(
+                    0,
+                    TEMP, 1, TEMP.size - 1
+                )
                 TEMP[4] += t1
                 TEMP[0] = t1 + t2
             }

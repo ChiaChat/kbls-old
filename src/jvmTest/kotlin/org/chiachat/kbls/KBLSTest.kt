@@ -1,14 +1,10 @@
 package org.chiachat.kbls
 
-import okio.ByteString.Companion.decodeHex
 import org.chiachat.jbls.BLSKeyPair
-import org.chiachat.kbls.crypto.ripemd160.extensions.digestRipemd160
-import org.chiachat.kbls.crypto.sha256.extensions.sha256
-import org.chiachat.kbls.util.hexToUByteArray
+import org.chiachat.kbls.crypto.KHex
 import org.junit.jupiter.api.Test
 import java.security.SecureRandom
 import kotlin.test.junit5.JUnit5Asserter.assertEquals
-
 
 class KBLSTest {
     val kbls = KBLS()
@@ -33,23 +29,20 @@ class KBLSTest {
 
     @OptIn(ExperimentalUnsignedTypes::class)
     @Test
-    fun testBech32Encoding(){
-        val pk = "ebdae24c2760038ca20d1aac3ed6876a1158a5269169b952ac8c46f2a99e1512"
-        val pkarr = pk.hexToUByteArray()
-        pkarr.forEach { print("$it,") }
-        val encoded = Bech32.encode(humanReadablePart = "xch", pkarr)
-        assertEquals("Check keys match", "", encoded)
+    fun testBech32Encoding() {
+        val pk = KHex("ebdae24c2760038ca20d1aac3ed6876a1158a5269169b952ac8c46f2a99e1512").toByteArray()
+        val encoded = Bech32.encode(humanReadablePart = "xch", pk)
+        assertEquals("Check keys match", "xch1a0dwynp8vqpcegsdr2kra458dgg43ffxj95mj54v33r092v7z5fq3jg8t8", encoded)
     }
 
     @Test
-    fun testSignature(){
+    fun testSignature() {
         val message = "Super Duper Authentic Message"
         val signature = keypair.sign(message)
 //        assertTrue(KBLS.)
     }
 
     @Test
-    fun testAggregatedSignature(){
-
+    fun testAggregatedSignature() {
     }
 }

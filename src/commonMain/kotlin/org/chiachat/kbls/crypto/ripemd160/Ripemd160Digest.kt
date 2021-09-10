@@ -112,8 +112,10 @@ public class Ripemd160Digest {
     }
 
     private fun processWord(inputWord: ByteArray, inputOffset: Int) {
-        x[xOff++] = (inputWord[inputOffset].toInt() and 0xff or (inputWord[inputOffset + 1].toInt() and 0xff shl 8)
-                or (inputWord[inputOffset + 2].toInt() and 0xff shl 16) or (inputWord[inputOffset + 3].toInt() and 0xff shl 24))
+        x[xOff++] = (
+            inputWord[inputOffset].toInt() and 0xff or (inputWord[inputOffset + 1].toInt() and 0xff shl 8)
+                or (inputWord[inputOffset + 2].toInt() and 0xff shl 16) or (inputWord[inputOffset + 3].toInt() and 0xff shl 24)
+            )
 
         if (xOff == 16) {
             processBlock()
