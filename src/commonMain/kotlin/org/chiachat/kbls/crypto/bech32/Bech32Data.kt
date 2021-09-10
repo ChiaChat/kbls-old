@@ -5,8 +5,9 @@ data class Bech32Data(
     val data: ByteArray
 ) {
     override fun equals(other: Any?): Boolean {
+        if (other == null) return false
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (this::class != other::class) return false
 
         other as Bech32Data
 
