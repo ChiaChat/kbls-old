@@ -24,7 +24,10 @@ internal fun ByteArray.toIntArray(): IntArray {
 
     val array = IntArray(this.size / INT_BYTES)
     for (i in array.indices) {
-        val integer = arrayOf(this[i * INT_BYTES], this[i * INT_BYTES + 1], this[i * INT_BYTES + 2], this[i * INT_BYTES + 3])
+        val integer = arrayOf(
+            this[i * INT_BYTES], this[i * INT_BYTES + 1], this[i * INT_BYTES + 2], this[i * INT_BYTES + 3]
+        )
+
         array[i] = integer.toInt()
     }
     return array

@@ -54,7 +54,7 @@ kotlin {
             }
         }
     }*/
-    val publicationsFromMainHost =
+    /*val publicationsFromMainHost =
         listOf(jvm(), js()).map { it.name } + "kotlinMultiplatform"
 
     publishing {
@@ -66,7 +66,7 @@ kotlin {
                     .configureEach { onlyIf { findProperty("isMainHost") == "true" } }
             }
         }
-    }
+    }*/
     sourceSets {
         val commonMain by getting {
             dependencies {

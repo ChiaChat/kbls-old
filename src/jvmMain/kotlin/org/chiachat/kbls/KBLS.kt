@@ -24,7 +24,11 @@ actual class KBLS {
     actual fun validateSignature(publicKey: KBLSPublicKey, message: String, signature: KBLSignature): Boolean {
         return BLS.verify(publicKey.toJBLS(), message.toByteArray().wrap(), signature.toJBLS())
     }
-    actual fun validateAggregate(publicKeys: List<KBLSPublicKey>, messages: List<String>, signature: KBLSignature,): Boolean {
+    actual fun validateAggregate(
+        publicKeys: List<KBLSPublicKey>,
+        messages: List<String>,
+        signature: KBLSignature,
+    ): Boolean {
         val pks = publicKeys.map { it.toJBLS() }
         val msgs = messages.map { it.toByteArray().wrap() }
         return BLS.aggregateVerify(pks, msgs, signature.toJBLS())
